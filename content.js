@@ -2,7 +2,7 @@ window.CONTENT = {
   "intro": [
     {
       "big": false,
-      "text": "난 잘 몰라\n이것도 다 ai로 무료로\n만든거야"
+      "text": "난 잘 몰라\n이것도 다 ai로 무료로\n만든거야s"
     },
     {
       "big": false,
@@ -20,7 +20,7 @@ window.CONTENT = {
   "pages": {
     "when": {
       "title": "when",
-      "text": "이런제길ㅁㄴㅇㅁㄴㅇㅇㅁㄴ"
+      "text": "261023/01:39:10"
     },
     "where": {
       "title": "where",
