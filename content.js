@@ -20,7 +20,7 @@ window.CONTENT = {
   "pages": {
     "when": {
       "title": "when",
-      "text": "이런제길"
+      "text": "이런제길ㅁㄴㅇㅁㄴㅇㅇㅁㄴ"
     },
     "where": {
       "title": "where",
