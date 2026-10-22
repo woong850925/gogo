@@ -91,30 +91,35 @@
 <div id="stage" aria-live="polite"></div>
 
 <nav id="menu" aria-label="메뉴">
-  <a href="https://naver.com">when</a>
-  <a href="https://daum.net">where</a>
-  <a href="https://google.com">what</a>
-  <a href="index.html">how</a>
+  <a href="when.html">when</a>
+  <a href="where.html">where</a>
+  <a href="what.html">what</a>
+  <a href="how.html">how</a>
 </nav>
 
+<!-- 내용은 content.js 에서 불러옵니다 (업데이트 프로그램이 이 파일을 갱신해요) -->
+<script src="content.js"></script>
 <script>
 (function () {
   var stage = document.getElementById('stage');
   var menu = document.getElementById('menu');
   var items = menu.querySelectorAll('a');
 
-  var scenes = [
-    { big: false, lines: ['난 잘 몰라', '이것도 다 ai로 무료로', '만든거야'] },
-    { big: false, lines: ['근데?', '이거 되면 내 위치가 어떨까?', '다 파괴할래'] },
-    { big: true,  lines: ['배운자들한테 미안.'] },
-    { big: true,  lines: ['더 기대하게 해볼게'] }
+  var DEFAULT_SCENES = [
+    { big: false, text: '난 잘 몰라\n이것도 다 ai로 무료로\n만든거야' },
+    { big: false, text: '근데?\n이거 되면 내 위치가 어떨까?\n다 파괴할래' },
+    { big: true,  text: '배운자들한테 미안.' },
+    { big: true,  text: '더 기대하게 해볼게' }
   ];
+  var source = (window.CONTENT && window.CONTENT.intro && window.CONTENT.intro.length)
+    ? window.CONTENT.intro : DEFAULT_SCENES;
+  var scenes = source.map(function (sc) {
+    return { big: !!sc.big, lines: String(sc.text || '').split('\n') };
+  });
 
   var TYPE_MS = 90;       // 글자당 속도
   var LINE_PAUSE = 450;   // 줄 사이 멈춤
   var SCENE_PAUSE = 1600; // 장면 끝나고 유지
-  var MENU_DELAY = 2000;  // 인트로 끝난 뒤 메뉴가 시작되기까지
-  var MENU_STEP = 1000;   // 메뉴 항목 사이 간격 (페이드 시간도 1초)
 
   var run = 0;
 
@@ -140,7 +145,8 @@
       var scene = scenes[s];
       stage.classList.toggle('big', scene.big);
       stage.textContent = '';
-      items[s].classList.add('show'); // 장면 시작과 함께 when → where → what → how 순서로 등장
+      // 장면 시작과 함께 when → where → what → how 순서로 등장
+      if (items[s]) items[s].classList.add('show');
 
       var caret = document.createElement('span');
       caret.className = 'caret';
@@ -163,6 +169,8 @@
       if (me !== run) return;
       await wait(s === scenes.length - 1 ? 0 : SCENE_PAUSE);
     }
+    // 장면 수가 메뉴보다 적어도 남은 메뉴는 마지막에 모두 나타나게
+    for (var k = scenes.length; k < items.length; k++) items[k].classList.add('show');
   }
 
   // 화면을 탭/클릭하면 처음부터 다시 재생 (메뉴바 탭은 제외)
