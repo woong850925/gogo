@@ -52,6 +52,17 @@
   document.body.addEventListener('click', function (e) {
     if (!e.target.closest('a')) location.href = 'index.html';
   });
+
+  // 아무 조작이 없으면 5초 후 첫 화면으로
+  var IDLE_MS = 5000, timer;
+  function resetIdle() {
+    clearTimeout(timer);
+    timer = setTimeout(function () { location.href = 'index.html'; }, IDLE_MS);
+  }
+  ['mousemove', 'mousedown', 'touchstart', 'touchmove', 'keydown', 'wheel', 'scroll'].forEach(function (ev) {
+    window.addEventListener(ev, resetIdle, { passive: true });
+  });
+  resetIdle();
 })();
 </script>
 </body>
