@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>타이핑</title>
+<style>
+  :root {
+    /* 글자 크기: 어떤 기기든 화면 가로폭 기준 같은 비율 (본문 한 줄이 화면의 약 60%) */
+    --text: 4.6vw;
+    --big: 7vw;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  *, *::before, *::after { box-sizing: inherit; }
+  html, body {
+    margin: 0;
+    height: 100%;
+    background: #000;
+    color: #fff;
+    overflow: hidden;
+  }
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    font-family: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", system-ui, sans-serif;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  #stage {
+    flex: none;
+    margin-left: 12vw; /* 메뉴 글자 끝 ~ 본문 시작 간격 */
+    width: 60vw;
+    font-size: var(--text);
+    font-weight: 700;
+    line-height: 1.5;
+    word-break: keep-all;
+    white-space: pre-wrap;
+    text-align: left;
+  }
+  #stage.big {
+    font-size: var(--big);
+    line-height: 1.3;
+    font-weight: 800;
+  }
+  .caret {
+    display: inline-block;
+    width: 0.08em;
+    height: 1em;
+    margin-left: 0.08em;
+    background: #fff;
+    vertical-align: -0.12em;
+    animation: blink 0.9s steps(1) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* 메뉴바: 화면 왼쪽 세로 배치, 위 → 아래 순서로 하나씩 디졸브 */
+  #menu {
+    order: -1;
+    flex: none;
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 7vw;
+    padding: 0 0 0 calc(5vw + env(safe-area-inset-left, 0px));
+    cursor: default;
+  }
+  #menu a {
+    color: inherit;
+    text-decoration: none;
+    pointer-events: none; /* 나타나기 전에는 클릭 불가 */
+    font-size: 4vw;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    opacity: 0;
+    transition: opacity 2.5s ease;
+    cursor: pointer;
+  }
+  #menu a.show { opacity: 1; pointer-events: auto; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .caret { animation: none; }
+    #menu a { transition: none; }
+  }
+</style>
+</head>
+<body>
+<div id="stage" aria-live="polite"></div>
+
+<nav id="menu" aria-label="메뉴">
+  <a href="https://naver.com">when</a>
+  <a href="https://daum.net">where</a>
+  <a href="https://google.com">what</a>
+  <a href="index.html">how</a>
+</nav>
+
+<script>
+(function () {
+  var stage = document.getElementById('stage');
+  var menu = document.getElementById('menu');
+  var items = menu.querySelectorAll('a');
+
+  var scenes = [
+    { big: false, lines: ['난 잘 몰라', '이것도 다 ai로 무료로', '만든거야'] },
+    { big: false, lines: ['근데?', '이거 되면 내 위치가 어떨까?', '다 파괴할래'] },
+    { big: true,  lines: ['배운자들한테 미안.'] },
+    { big: true,  lines: ['더 기대하게 해볼게'] }
+  ];
+
+  var TYPE_MS = 90;       // 글자당 속도
+  var LINE_PAUSE = 450;   // 줄 사이 멈춤
+  var SCENE_PAUSE = 1600; // 장면 끝나고 유지
+  var MENU_DELAY = 2000;  // 인트로 끝난 뒤 메뉴가 시작되기까지
+  var MENU_STEP = 1000;   // 메뉴 항목 사이 간격 (페이드 시간도 1초)
+
+  var run = 0;
+
+  function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+
+  function hideMenu() {
+    var i;
+    for (i = 0; i < items.length; i++) {
+      items[i].style.transition = 'none';
+      items[i].classList.remove('show');
+    }
+    void menu.offsetWidth; // 즉시 숨김 적용
+    for (i = 0; i < items.length; i++) items[i].style.transition = '';
+  }
+
+  async function play() {
+    var me = ++run;
+    stage.textContent = '';
+    stage.classList.remove('big');
+    hideMenu();
+
+    for (var s = 0; s < scenes.length; s++) {
+      var scene = scenes[s];
+      stage.classList.toggle('big', scene.big);
+      stage.textContent = '';
+      items[s].classList.add('show'); // 장면 시작과 함께 when → where → what → how 순서로 등장
+
+      var caret = document.createElement('span');
+      caret.className = 'caret';
+
+      for (var l = 0; l < scene.lines.length; l++) {
+        var node = document.createTextNode('');
+        stage.insertBefore(node, caret.parentNode ? caret : null);
+        if (!caret.parentNode) stage.appendChild(caret);
+        var text = scene.lines[l];
+        for (var i = 0; i < text.length; i++) {
+          if (me !== run) return;
+          node.nodeValue += text[i];
+          await wait(TYPE_MS);
+        }
+        if (l < scene.lines.length - 1) {
+          stage.insertBefore(document.createTextNode('\n'), caret);
+          await wait(LINE_PAUSE);
+        }
+      }
+      if (me !== run) return;
+      await wait(s === scenes.length - 1 ? 0 : SCENE_PAUSE);
+    }
+  }
+
+  // 화면을 탭/클릭하면 처음부터 다시 재생 (메뉴바 탭은 제외)
+  document.body.addEventListener('click', play);
+  menu.addEventListener('click', function (e) { e.stopPropagation(); });
+  play();
+})();
+</script>
+</body>
+</html>
