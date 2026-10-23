@@ -102,6 +102,7 @@
 
 <!-- 내용은 content.js 에서 불러옵니다 (업데이트 프로그램이 이 파일을 갱신해요) -->
 <script>document.write('<script src="content.js?v=' + Date.now() + '"><\/script>');</script>
+<script>try { history.replaceState(null, '', location.pathname.replace(/[^\/]*$/, '')); } catch (e) {}</script>
 <script>
 (function () {
   if (window.CONTENT && window.CONTENT.title) document.title = window.CONTENT.title;
