@@ -39,7 +39,7 @@ window.CONTENT = {
       "text": "준비 중"
     }
   },
-  "title": "",
+  "title": "이게 뭐지?",
   "menu": {
     "when": {
       "delay": 0,
