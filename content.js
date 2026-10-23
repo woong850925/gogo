@@ -46,15 +46,15 @@ window.CONTENT = {
       "fade": 2.5
     },
     "where": {
-      "delay": 4.0,
+      "delay": 1.0,
       "fade": 2.5
     },
     "what": {
-      "delay": 8.0,
+      "delay": 2.0,
       "fade": 2.5
     },
     "how": {
-      "delay": 12.0,
+      "delay": 3.0,
       "fade": 2.5
     }
   }
