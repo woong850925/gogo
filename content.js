@@ -34,5 +34,6 @@ window.CONTENT = {
       "title": "how",
       "text": "준비 중"
     }
-  }
+  },
+  "title": ""
 };
