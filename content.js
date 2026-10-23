@@ -39,7 +39,7 @@ window.CONTENT = {
       "text": "준비 중"
     }
   },
-  "title": "182449",
+  "title": "183110",
   "menu": {
     "when": {
       "delay": 0,
